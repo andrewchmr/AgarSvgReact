@@ -26,12 +26,27 @@ class App extends React.Component<{}, AppState> {
                 r: initialSizeMainBlob,
                 id: 0
             },
-            blobsPositions: getRandomPos(width, height)
+            blobsPositions: getRandomPos(width, height, initialSizeMainBlob)
         };
         this.svg = createRef();
     }
 
+    componentDidMount() {
+        this.setPositionUpdater();
+    }
+
+    componentDidUpdate() {
+        this.state.blobsPositions.forEach((pos: BlobData, index: number) => {
+            if (this.eats(pos)) {
+                const blobs = this.state.blobsPositions;
+                blobs.splice(index, 1);
+                this.setState({blobsPositions: blobs});
+            }
+        });
+    }
+
     updatePosition(pt: DOMPoint): void {
+        const {mainBlob} = this.state;
         const svgElement = this.svg.current;
         if (svgElement) {
             const screenCTM = svgElement.getScreenCTM();
@@ -42,17 +57,13 @@ class App extends React.Component<{}, AppState> {
                     mainBlob: {
                         ...prevState.mainBlob,
                         position: {
-                            x: this.state.mainBlob.position.x + normalized.x,
-                            y: this.state.mainBlob.position.y + normalized.y
+                            x: mainBlob.position.x + normalized.x,
+                            y: mainBlob.position.y + normalized.y
                         }
                     }
                 }));
             }
         }
-    }
-
-    componentDidMount() {
-        this.setPositionUpdater();
     }
 
     setPositionUpdater() {
@@ -71,28 +82,19 @@ class App extends React.Component<{}, AppState> {
     }
 
     eats(other: BlobData): boolean {
-        const distance = getMagnitude(this.state.mainBlob.position.x - other.position.x, this.state.mainBlob.position.y - other.position.y);
-        if (distance < this.state.mainBlob.r + other.r) {
+        const {mainBlob} = this.state;
+        const distance = getMagnitude(mainBlob.position.x - other.position.x, mainBlob.position.y - other.position.y);
+        if (distance < mainBlob.r + other.r) {
             this.setState(prevState => ({
                 mainBlob: {
                     ...prevState.mainBlob,
-                    r: getMagnitude(this.state.mainBlob.r, other.r)
+                    r: getMagnitude(mainBlob.r, other.r)
                 }
             }));
             return true;
         } else {
             return false;
         }
-    }
-
-    componentDidUpdate() {
-        this.state.blobsPositions.forEach((pos: BlobData, index: number) => {
-            if (this.eats(pos)) {
-                const blobs = this.state.blobsPositions;
-                blobs.splice(index, 1);
-                this.setState({blobsPositions: blobs});
-            }
-        });
     }
 
     render() {
@@ -112,18 +114,20 @@ class App extends React.Component<{}, AppState> {
             OTransition: "all 0.5s ease-in-out"
         };
 
+        const {mainBlob, blobsPositions} = this.state;
+
         return (
             <svg style={fullScreen} ref={this.svg} width={width} height={height}>
                 <g style={transition}
-                   transform={`translate(${width / 2}, ${height / 2}), scale(${initialSizeMainBlob / this.state.mainBlob.r})`}>
-                    <g transform={`translate(${-this.state.mainBlob.position.x}, ${-this.state.mainBlob.position.y})`}>
-                        <Blob id={0} position={{x: this.state.mainBlob.position.x, y: this.state.mainBlob.position.y}}
-                              r={this.state.mainBlob.r}/>
-                        {this.state.blobsPositions.map((pos: BlobData) =>
-                            <Blob id={pos.id} position={{
-                                x: pos.position.x,
-                                y: pos.position.y
-                            }} r={pos.r} key={pos.id}/>)}
+                   transform={`translate(${width / 2}, ${height / 2}), scale(${initialSizeMainBlob / mainBlob.r})`}>
+                    <g transform={`translate(${-mainBlob.position.x}, ${-mainBlob.position.y})`}>
+                        <Blob id={mainBlob.id} position={{x: mainBlob.position.x, y: mainBlob.position.y}}
+                              r={mainBlob.r}/>
+                        {blobsPositions.map((blob: BlobData) =>
+                            <Blob id={blob.id} position={{
+                                x: blob.position.x,
+                                y: blob.position.y
+                            }} r={blob.r} key={blob.id}/>)}
                     </g>
                 </g>
             </svg>
