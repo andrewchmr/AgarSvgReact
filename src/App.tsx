@@ -1,11 +1,11 @@
 import React, {createRef, RefObject} from 'react';
 import './App.css';
 import Blob from "./components/Blob";
-import {BlobData, getMagnitude, getRandomPos, normalize, Position} from "./utils";
+import {BlobData, getMagnitude, getRandomPos, normalize} from "./utils";
 
 interface AppState {
     mainBlob: BlobData,
-    blobsPositions: Position[]
+    blobsPositions: BlobData[]
 }
 
 const width = window.innerWidth;
@@ -23,7 +23,8 @@ class App extends React.Component<{}, AppState> {
                     x: 0,
                     y: 0
                 },
-                r: initialSizeMainBlob
+                r: initialSizeMainBlob,
+                id: 0
             },
             blobsPositions: getRandomPos(width, height)
         };
@@ -69,13 +70,13 @@ class App extends React.Component<{}, AppState> {
         }
     }
 
-    eats(other: Position): boolean {
-        const distance = getMagnitude(this.state.mainBlob.position.x - other.x, this.state.mainBlob.position.y - other.y);
-        if (distance < this.state.mainBlob.r + 10) {
+    eats(other: BlobData): boolean {
+        const distance = getMagnitude(this.state.mainBlob.position.x - other.position.x, this.state.mainBlob.position.y - other.position.y);
+        if (distance < this.state.mainBlob.r + other.r) {
             this.setState(prevState => ({
                 mainBlob: {
                     ...prevState.mainBlob,
-                    r: getMagnitude(this.state.mainBlob.r, 10)
+                    r: getMagnitude(this.state.mainBlob.r, other.r)
                 }
             }));
             return true;
@@ -85,7 +86,7 @@ class App extends React.Component<{}, AppState> {
     }
 
     componentDidUpdate() {
-        this.state.blobsPositions.forEach((pos: Position, index: number) => {
+        this.state.blobsPositions.forEach((pos: BlobData, index: number) => {
             if (this.eats(pos)) {
                 const blobs = this.state.blobsPositions;
                 blobs.splice(index, 1);
@@ -116,11 +117,13 @@ class App extends React.Component<{}, AppState> {
                 <g style={transition}
                    transform={`translate(${width / 2}, ${height / 2}), scale(${initialSizeMainBlob / this.state.mainBlob.r})`}>
                     <g transform={`translate(${-this.state.mainBlob.position.x}, ${-this.state.mainBlob.position.y})`}>
-                        <Blob x={this.state.mainBlob.position.x} y={this.state.mainBlob.position.y}
+                        <Blob id={0} position={{x: this.state.mainBlob.position.x, y: this.state.mainBlob.position.y}}
                               r={this.state.mainBlob.r}/>
-                        {this.state.blobsPositions.map((pos: Position, index: number) => {
-                            return <Blob x={pos.x} y={pos.y} r={10} key={index}/>
-                        })}
+                        {this.state.blobsPositions.map((pos: BlobData) =>
+                            <Blob id={pos.id} position={{
+                                x: pos.position.x,
+                                y: pos.position.y
+                            }} r={pos.r} key={pos.id}/>)}
                     </g>
                 </g>
             </svg>
