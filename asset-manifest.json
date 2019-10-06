@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/AgarSvgReact/static/css/main.dfca195d.chunk.css",
+    "main.js": "/AgarSvgReact/static/js/main.aba9140b.chunk.js",
+    "main.js.map": "/AgarSvgReact/static/js/main.aba9140b.chunk.js.map",
+    "runtime-main.js": "/AgarSvgReact/static/js/runtime-main.eaf5115a.js",
+    "runtime-main.js.map": "/AgarSvgReact/static/js/runtime-main.eaf5115a.js.map",
+    "static/js/2.e75db994.chunk.js": "/AgarSvgReact/static/js/2.e75db994.chunk.js",
+    "static/js/2.e75db994.chunk.js.map": "/AgarSvgReact/static/js/2.e75db994.chunk.js.map",
+    "index.html": "/AgarSvgReact/index.html",
+    "precache-manifest.afedc7154ec20789733be3463c2e22cd.js": "/AgarSvgReact/precache-manifest.afedc7154ec20789733be3463c2e22cd.js",
+    "service-worker.js": "/AgarSvgReact/service-worker.js",
+    "static/css/main.dfca195d.chunk.css.map": "/AgarSvgReact/static/css/main.dfca195d.chunk.css.map"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.eaf5115a.js",
+    "static/js/2.e75db994.chunk.js",
+    "static/css/main.dfca195d.chunk.css",
+    "static/js/main.aba9140b.chunk.js"
+  ]
+}
