@@ -1,15 +1,22 @@
 import React, {createRef} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Blob from "./components/Blob";
 
-interface AppState {
-    pointX: number;
-    pointY: number;
+interface Position {
+    x: number,
+    y: number,
+    id: number
 }
 
-const width = 600;
-const height = 600;
+interface AppState {
+    pointX: number,
+    pointY: number,
+    r: number,
+    blobsPositions: Position[]
+}
+
+const width = window.innerWidth;
+const height = window.innerHeight;
 
 class App extends React.Component<{}, AppState> {
 
@@ -18,8 +25,10 @@ class App extends React.Component<{}, AppState> {
     constructor(props: any) {
         super(props);
         this.state = {
-            pointX: width/2,
-            pointY: height/2
+            pointX: 0,
+            pointY: 0,
+            r: 50,
+            blobsPositions: this.getRandomPos()
         };
         this.svg = createRef();
     }
@@ -29,22 +38,22 @@ class App extends React.Component<{}, AppState> {
     }
 
     mag(x: number, y: number) {
-        return Math.sqrt(x*x + y*y);
+        return Math.sqrt(x * x + y * y);
     };
 
-    normalize(x: number, y: number): {x: number, y: number}{
+    normalize(x: number, y: number): { x: number, y: number } {
         let m = this.mag(x, y);
         if (m > 0) {
-            m = m/2;
-            return {x: x/m, y: y/m};
+            m = m / 2;
+            return {x: x / m, y: y / m};
         } else {
             return {x: x, y: y}
         }
     };
 
-    updatePosition(pt: any){
+    updatePosition(pt: any) {
         const loc = pt.matrixTransform(this.svg.current.getScreenCTM().inverse());
-        const normalized = this.normalize(loc.x-width/2, loc.y-height/2);
+        const normalized = this.normalize(loc.x - width / 2, loc.y - height / 2);
         this.setState({pointX: this.state.pointX + normalized.x, pointY: this.state.pointY + normalized.y});
     }
 
@@ -52,34 +61,72 @@ class App extends React.Component<{}, AppState> {
         this.setPositionUpdater();
     }
 
-    setPositionUpdater(){
+    getRandomPos() {
+        let blobs = [];
+        for (let i = 0; i < 100; ++i) {
+            blobs.push({x: this.getRandomNumber(-width, width), y: this.getRandomNumber(-height, height), id: i});
+        }
+        return blobs;
+    }
+
+    setPositionUpdater() {
         let pt = this.svg.current.createSVGPoint();
         document.onmousemove = (e) => {
-            pt.x = e.clientX; pt.y = e.clientY;
+            pt.x = e.clientX;
+            pt.y = e.clientY;
+        };
+        document.ontouchmove = (e) => {
+            pt.x = e.touches[0].clientX;
+            pt.y = e.touches[0].clientY;
         };
         setInterval(() => this.updatePosition(pt), 20);
     }
 
-    render() {
-        let blobs = [];
-        for (let i = 0; i < 10; ++i) {
-            blobs.push(<Blob x={this.getRandomNumber(0, width)} y={this.getRandomNumber(0, height)} r={10} key={i}/>)
+    eats(other: Position) {
+        const d = Math.sqrt((this.state.pointX - other.x) * (this.state.pointX - other.x) + (this.state.pointY - other.y) * (this.state.pointY - other.y));
+        if (d < this.state.r + 10) {
+            const sum = Math.PI * this.state.r * this.state.r + Math.PI * 10 * 10;
+            this.setState({r: Math.sqrt(sum / Math.PI)});
+            return true;
+        } else {
+            return false;
         }
+    }
+
+    render() {
+
+        const fullScreen = {
+            position: "fixed",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: 'black'
+        } as React.CSSProperties;
+
+        const transition = {
+            transition: "all 0.5s ease-in-out",
+            WebkitTransition: "all 0.5s ease-in-out",
+            MozTransition: "all 0.5s ease-in-out",
+            OTransition: "all 0.5s ease-in-out"
+        };
 
         return (
             <div className="App">
-                {/*   <header className="App-header">
-              <img src={logo} className="App-logo" alt="logo"/>
-              <h1 className="App-title">Flappy Bird (SVG + React)</h1>
-          </header>*/}
-                <p className="App-intro"/>
-                <svg  ref={this.svg} style={{backgroundColor: 'black'}} width={width} height={height}>
-                    <g transform={`translate(${width/2-this.state.pointX}, ${height/2-this.state.pointY})`}>
-                    <Blob x={this.state.pointX} y={this.state.pointY} r={50}/>
-                    <circle cx={10} cy={100} r={10} fill={"white"}/>
-                    <circle cx={50} cy={300} r={10} fill={"white"}/>
-                    <circle cx={100} cy={400} r={10} fill={"white"}/>
-                    <circle cx={200} cy={500} r={10} fill={"white"}/>
+                <svg style={fullScreen} ref={this.svg} width={width} height={height}>
+                    <g style={transition}
+                       transform={`translate(${width / 2}, ${height / 2}), scale(${50 / this.state.r})`}>
+                        <g transform={`translate(${-this.state.pointX}, ${-this.state.pointY})`}>
+                            <Blob x={this.state.pointX} y={this.state.pointY} r={this.state.r}/>
+                            {this.state.blobsPositions.map((pos: Position, index: number) => {
+                                if (this.eats(pos)) {
+                                    const blobs = this.state.blobsPositions;
+                                    blobs.splice(index, 1);
+                                    this.setState({blobsPositions: blobs});
+                                }
+                                return <Blob x={pos.x} y={pos.y} r={10} key={index}/>
+                            })}
+                        </g>
                     </g>
                 </svg>
             </div>
