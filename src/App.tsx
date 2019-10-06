@@ -5,7 +5,6 @@ import Blob from "./components/Blob";
 interface Position {
     x: number,
     y: number,
-    id: number
 }
 
 interface AppState {
@@ -37,21 +36,21 @@ class App extends React.Component<{}, AppState> {
         return Math.random() * (max - min) + min;
     }
 
-    mag(x: number, y: number) {
+    getMagnitude(x: number, y: number): number {
         return Math.sqrt(x * x + y * y);
     };
 
-    normalize(x: number, y: number): { x: number, y: number } {
-        let m = this.mag(x, y);
-        if (m > 0) {
-            m = m / 2;
-            return {x: x / m, y: y / m};
+    normalize(x: number, y: number): Position {
+        let magnitude = this.getMagnitude(x, y);
+        if (magnitude > 0) {
+            magnitude = magnitude / 2;
+            return {x: x / magnitude, y: y / magnitude};
         } else {
             return {x: x, y: y}
         }
     };
 
-    updatePosition(pt: any) {
+    updatePosition(pt: any): void {
         const loc = pt.matrixTransform(this.svg.current.getScreenCTM().inverse());
         const normalized = this.normalize(loc.x - width / 2, loc.y - height / 2);
         this.setState({pointX: this.state.pointX + normalized.x, pointY: this.state.pointY + normalized.y});
@@ -61,32 +60,31 @@ class App extends React.Component<{}, AppState> {
         this.setPositionUpdater();
     }
 
-    getRandomPos() {
+    getRandomPos(): Position[] {
         let blobs = [];
         for (let i = 0; i < 100; ++i) {
-            blobs.push({x: this.getRandomNumber(-width, width), y: this.getRandomNumber(-height, height), id: i});
+            blobs.push({x: this.getRandomNumber(-width, width), y: this.getRandomNumber(-height, height)});
         }
         return blobs;
     }
 
     setPositionUpdater() {
-        let pt = this.svg.current.createSVGPoint();
+        let point = this.svg.current.createSVGPoint();
         document.onmousemove = (e) => {
-            pt.x = e.clientX;
-            pt.y = e.clientY;
+            point.x = e.clientX;
+            point.y = e.clientY;
         };
         document.ontouchmove = (e) => {
-            pt.x = e.touches[0].clientX;
-            pt.y = e.touches[0].clientY;
+            point.x = e.touches[0].clientX;
+            point.y = e.touches[0].clientY;
         };
-        setInterval(() => this.updatePosition(pt), 20);
+        setInterval(() => this.updatePosition(point), 20);
     }
 
     eats(other: Position) {
-        const d = Math.sqrt((this.state.pointX - other.x) * (this.state.pointX - other.x) + (this.state.pointY - other.y) * (this.state.pointY - other.y));
-        if (d < this.state.r + 10) {
-            const sum = Math.PI * this.state.r * this.state.r + Math.PI * 10 * 10;
-            this.setState({r: Math.sqrt(sum / Math.PI)});
+        const distance = this.getMagnitude(this.state.pointX - other.x, this.state.pointY - other.y);
+        if (distance < this.state.r + 10) {
+            this.setState({r: this.getMagnitude(this.state.r, 10)});
             return true;
         } else {
             return false;
@@ -112,24 +110,22 @@ class App extends React.Component<{}, AppState> {
         };
 
         return (
-            <div className="App">
-                <svg style={fullScreen} ref={this.svg} width={width} height={height}>
-                    <g style={transition}
-                       transform={`translate(${width / 2}, ${height / 2}), scale(${50 / this.state.r})`}>
-                        <g transform={`translate(${-this.state.pointX}, ${-this.state.pointY})`}>
-                            <Blob x={this.state.pointX} y={this.state.pointY} r={this.state.r}/>
-                            {this.state.blobsPositions.map((pos: Position, index: number) => {
-                                if (this.eats(pos)) {
-                                    const blobs = this.state.blobsPositions;
-                                    blobs.splice(index, 1);
-                                    this.setState({blobsPositions: blobs});
-                                }
-                                return <Blob x={pos.x} y={pos.y} r={10} key={index}/>
-                            })}
-                        </g>
+            <svg style={fullScreen} ref={this.svg} width={width} height={height}>
+                <g style={transition}
+                   transform={`translate(${width / 2}, ${height / 2}), scale(${50 / this.state.r})`}>
+                    <g transform={`translate(${-this.state.pointX}, ${-this.state.pointY})`}>
+                        <Blob x={this.state.pointX} y={this.state.pointY} r={this.state.r}/>
+                        {this.state.blobsPositions.map((pos: Position, index: number) => {
+                            if (this.eats(pos)) {
+                                const blobs = this.state.blobsPositions;
+                                blobs.splice(index, 1);
+                                this.setState({blobsPositions: blobs});
+                            }
+                            return <Blob x={pos.x} y={pos.y} r={10} key={index}/>
+                        })}
                     </g>
-                </svg>
-            </div>
+                </g>
+            </svg>
         );
     }
 };
