@@ -1,3 +1,7 @@
+Simulating the Agar.io in Typescript using React and SVG.
+
+Demo: https://andrewchmr.github.io/AgarSvgReact/
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
