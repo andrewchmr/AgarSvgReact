@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "781299129b9ef6756c2024a2afc5415f",
+    "revision": "4ca7c19621c81be29d251fbf58f15c9c",
     "url": "/AgarSvgReact/index.html"
   },
   {

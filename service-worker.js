@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/AgarSvgReact/precache-manifest.c32c96686b083ece22c24764b86de3ea.js"
+  "/AgarSvgReact/precache-manifest.1fd1cebd9ea5162f418404f1627ba4f1.js"
 );
 
 self.addEventListener('message', (event) => {
