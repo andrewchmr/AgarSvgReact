@@ -109,21 +109,32 @@ const AgarIO = () => {
         OTransition: "all 0.5s ease-in-out"
     };
 
-    return (
-        <svg style={fullScreen} ref={svg} width={width} height={height}>
+    const Wrapper = (props: any) => {
+        return <svg style={fullScreen} ref={svg} width={width} height={height}>
             <g style={transition}
                transform={`translate(${width / 2}, ${height / 2}), scale(${initialSizeMainBlob / mainBlob.r})`}>
-                <g transform={`translate(${-mainBlob.position.x}, ${-mainBlob.position.y})`}>
-                    <Blob id={mainBlob.id} position={{x: mainBlob.position.x, y: mainBlob.position.y}}
-                          r={mainBlob.r}/>
-                    {blobsPositions.map((blob: BlobData) =>
-                        <Blob id={blob.id} position={{
-                            x: blob.position.x,
-                            y: blob.position.y
-                        }} r={blob.r} key={blob.id}/>)}
-                </g>
+                <g transform={`translate(${-mainBlob.position.x}, ${-mainBlob.position.y})`}>{props.children} </g>
             </g>
         </svg>
+    };
+
+    const MainBlob = () => <Blob id={mainBlob.id}
+                                 position={{x: mainBlob.position.x, y: mainBlob.position.y}}
+                                 r={mainBlob.r}/>;
+
+    const Blobs = () => {
+        return <g>{blobsPositions.map((blob: BlobData) =>
+            <Blob id={blob.id} position={{
+                x: blob.position.x,
+                y: blob.position.y
+            }} r={blob.r} key={blob.id}/>)}</g>
+    };
+
+    return (
+        <Wrapper>
+            <MainBlob/>
+            <Blobs/>
+        </Wrapper>
     );
 };
 
