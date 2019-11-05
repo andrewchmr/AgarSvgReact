@@ -131,10 +131,19 @@ const AgarIO = () => {
     };
 
     return (
-        <Wrapper>
-            <MainBlob/>
-            <Blobs/>
-        </Wrapper>
+        <svg style={fullScreen} ref={svg} width={width} height={height}>
+            <g style={transition}
+               transform={`translate(${width / 2}, ${height / 2}), scale(${initialSizeMainBlob / mainBlob.r})`}>
+                <g transform={`translate(${-mainBlob.position.x}, ${-mainBlob.position.y})`}>
+                    <MainBlob/>
+                    <g>{blobsPositions.map((blob: BlobData) =>
+                        <Blob id={blob.id} position={{
+                            x: blob.position.x,
+                            y: blob.position.y
+                        }} r={blob.r} key={blob.id}/>)}</g>
+                </g>
+            </g>
+        </svg>
     );
 };
 
