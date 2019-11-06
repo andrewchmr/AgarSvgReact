@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import AgarIO from './AgarIO';
+import AgarIO from './components/AgarIO';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(<AgarIO />, document.getElementById('root'));

@@ -1,11 +1,13 @@
 import React, {RefObject, useEffect, useRef, useState} from 'react';
-import Blob from "./components/Blob";
-import {BlobData, getMagnitude, getRandomPos, normalize} from "./utils";
+import Blob from "./Blob";
 import {clearInterval, setInterval} from "timers";
+import {BlobData, Position} from "../types";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
 const initialSizeMainBlob = 50;
+const delay = 20;
+const numberOfBlobs = 200;
 
 const AgarIO = () => {
     const [mainBlob, setMainBlob] = useState<BlobData>({
@@ -20,7 +22,10 @@ const AgarIO = () => {
     const [position, setPosition] = useState();
     const svg: RefObject<SVGSVGElement> = useRef(null);
     useEffect(() => setPositionUpdater(), []);
-    useEffect(() => {
+    useEffect(() => handleEatenBlobs());
+    useInterval(() => updatePosition(position), delay);
+
+    function handleEatenBlobs(): void {
         blobsPositions.forEach((pos: BlobData, index: number) => {
             if (eats(pos)) {
                 const blobs = blobsPositions;
@@ -28,8 +33,7 @@ const AgarIO = () => {
                 setBlobsPositions(blobs);
             }
         });
-    });
-    useInterval(() => updatePosition(position), 20);
+    }
 
     function useInterval(callback: any, delay: any) {
         const savedCallback = useRef();
@@ -67,7 +71,7 @@ const AgarIO = () => {
         }
     }
 
-    function setPositionUpdater() {
+    function setPositionUpdater(): void {
         if (svg.current) {
             let point = svg.current.createSVGPoint();
             document.onmousemove = (e) => {
@@ -92,47 +96,40 @@ const AgarIO = () => {
         }
     }
 
+    function getRandomPos(width: number, height: number, mainBlobR: number): BlobData[] {
+        return Array(numberOfBlobs).fill(0).map((value, index) => {
+            return {
+                position: {x: getRandomNumber(-2 * width, 2 * width), y: getRandomNumber(-2 * height, 2 * height)},
+                r: getRandomNumber(10, mainBlobR - 10),
+                id: index
+            }
+        });
+    }
 
-    const fullScreen = {
-        position: "fixed",
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'black'
-    } as React.CSSProperties;
+    function getRandomNumber(min: number, max: number): number {
+        return Math.random() * (max - min) + min;
+    }
 
-    const transition = {
-        transition: "all 0.5s ease-in-out",
-        WebkitTransition: "all 0.5s ease-in-out",
-        MozTransition: "all 0.5s ease-in-out",
-        OTransition: "all 0.5s ease-in-out"
-    };
+    function getMagnitude(x: number, y: number): number {
+        return Math.sqrt(x * x + y * y);
+    }
 
-    const Wrapper = (props: any) => {
-        return <svg style={fullScreen} ref={svg} width={width} height={height}>
-            <g style={transition}
-               transform={`translate(${width / 2}, ${height / 2}), scale(${initialSizeMainBlob / mainBlob.r})`}>
-                <g transform={`translate(${-mainBlob.position.x}, ${-mainBlob.position.y})`}>{props.children} </g>
-            </g>
-        </svg>
-    };
+    function normalize(x: number, y: number): Position {
+        let magnitude = getMagnitude(x, y);
+        if (magnitude > 0) {
+            magnitude = magnitude / 5;
+            return {x: x / magnitude, y: y / magnitude};
+        } else {
+            return {x: x, y: y}
+        }
+    }
 
-    const MainBlob = () => <Blob id={mainBlob.id}
-                                 position={{x: mainBlob.position.x, y: mainBlob.position.y}}
+    const MainBlob = () => <Blob id={mainBlob.id} position={{x: mainBlob.position.x, y: mainBlob.position.y}}
                                  r={mainBlob.r}/>;
 
-    const Blobs = () => {
-        return <g>{blobsPositions.map((blob: BlobData) =>
-            <Blob id={blob.id} position={{
-                x: blob.position.x,
-                y: blob.position.y
-            }} r={blob.r} key={blob.id}/>)}</g>
-    };
-
     return (
-        <svg style={fullScreen} ref={svg} width={width} height={height}>
-            <g style={transition}
+        <svg viewBox={`0 0 ${width} ${height}`} ref={svg}>
+            <g className={'wrapper'}
                transform={`translate(${width / 2}, ${height / 2}), scale(${initialSizeMainBlob / mainBlob.r})`}>
                 <g transform={`translate(${-mainBlob.position.x}, ${-mainBlob.position.y})`}>
                     <MainBlob/>
