@@ -124,15 +124,13 @@ const AgarIO = () => {
         }
     }
 
-    const MainBlob = () => <Blob id={mainBlob.id} position={{x: mainBlob.position.x, y: mainBlob.position.y}}
-                                 r={mainBlob.r}/>;
-
     return (
         <svg viewBox={`0 0 ${width} ${height}`} ref={svg}>
             <g className={'wrapper'}
                transform={`translate(${width / 2}, ${height / 2}), scale(${initialSizeMainBlob / mainBlob.r})`}>
                 <g transform={`translate(${-mainBlob.position.x}, ${-mainBlob.position.y})`}>
-                    <MainBlob/>
+                    <Blob id={mainBlob.id} position={{x: mainBlob.position.x, y: mainBlob.position.y}}
+                          r={mainBlob.r}/>
                     <g>{blobsPositions.map((blob: BlobData) =>
                         <Blob id={blob.id} position={{
                             x: blob.position.x,
