@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/AgarSvgReact/static/css/main.3d12e006.chunk.css",
-    "main.js": "/AgarSvgReact/static/js/main.22c3ba80.chunk.js",
-    "main.js.map": "/AgarSvgReact/static/js/main.22c3ba80.chunk.js.map",
+    "main.css": "/AgarSvgReact/static/css/main.491bee12.chunk.css",
+    "main.js": "/AgarSvgReact/static/js/main.3daf77f9.chunk.js",
+    "main.js.map": "/AgarSvgReact/static/js/main.3daf77f9.chunk.js.map",
     "runtime-main.js": "/AgarSvgReact/static/js/runtime-main.eaf5115a.js",
     "runtime-main.js.map": "/AgarSvgReact/static/js/runtime-main.eaf5115a.js.map",
-    "static/js/2.38d09b2b.chunk.js": "/AgarSvgReact/static/js/2.38d09b2b.chunk.js",
-    "static/js/2.38d09b2b.chunk.js.map": "/AgarSvgReact/static/js/2.38d09b2b.chunk.js.map",
+    "static/js/2.7bf7c95e.chunk.js": "/AgarSvgReact/static/js/2.7bf7c95e.chunk.js",
+    "static/js/2.7bf7c95e.chunk.js.map": "/AgarSvgReact/static/js/2.7bf7c95e.chunk.js.map",
     "index.html": "/AgarSvgReact/index.html",
-    "precache-manifest.2728856cef4e47740137c4cc57a86268.js": "/AgarSvgReact/precache-manifest.2728856cef4e47740137c4cc57a86268.js",
+    "precache-manifest.dc7d13568aae9ccdd20e5caf2bb6bfbf.js": "/AgarSvgReact/precache-manifest.dc7d13568aae9ccdd20e5caf2bb6bfbf.js",
     "service-worker.js": "/AgarSvgReact/service-worker.js",
-    "static/css/main.3d12e006.chunk.css.map": "/AgarSvgReact/static/css/main.3d12e006.chunk.css.map"
+    "static/css/main.491bee12.chunk.css.map": "/AgarSvgReact/static/css/main.491bee12.chunk.css.map"
   },
   "entrypoints": [
     "static/js/runtime-main.eaf5115a.js",
-    "static/js/2.38d09b2b.chunk.js",
-    "static/css/main.3d12e006.chunk.css",
-    "static/js/main.22c3ba80.chunk.js"
+    "static/js/2.7bf7c95e.chunk.js",
+    "static/css/main.491bee12.chunk.css",
+    "static/js/main.3daf77f9.chunk.js"
   ]
 }
